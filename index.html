@@ -1,0 +1,869 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>红色文化知识小课堂</title>
+<style>
+  /* ============================================================
+     配色与基础规范
+     主色：中国红 #C8102E / 深红 #7A0B14 / 金色 #D4AF37
+     背景图加载失败时，各层都会自动回退到红色渐变，页面照常可用。
+     ============================================================ */
+  :root {
+    --china-red: #C8102E;
+    --deep-red:  #7A0B14;
+    --gold:      #D4AF37;
+    --gold-soft: #F0D98A;
+    --cream:     #FFF8F0;
+    --text-dark: #3a1f1a;
+    --shadow:    0 14px 40px rgba(60, 0, 0, .28);
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  /* 注册自定义属性，让环形分数可以平滑增长（旧浏览器不支持则直接显示终值） */
+  @property --pct {
+    syntax: "<number>";
+    inherits: false;
+    initial-value: 0;
+  }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    font-family: "PingFang SC", "Microsoft YaHei", "Hiragino Sans GB", sans-serif;
+    color: var(--text-dark);
+    line-height: 1.85;
+    min-height: 100vh;
+    /* 底色兜底，防止图片未加载时出现白屏 */
+    background: linear-gradient(160deg, var(--deep-red), var(--china-red));
+  }
+
+  /* 标题类统一使用宋体，强化国风质感 */
+  h1, h2, h3, .serif {
+    font-family: "Noto Serif SC", "Source Han Serif SC", "STZhongsong", "SimSun", serif;
+  }
+
+  /* ---------- 全站固定背景层（首页图 bg_home.jpg） ---------- */
+  .page-bg {
+    position: fixed;
+    inset: 0;
+    z-index: -1;
+    background:
+      url("bg_home.jpg") center 35% / cover no-repeat,
+      linear-gradient(160deg, var(--deep-red), var(--china-red));
+  }
+  /* 深红蒙版：压暗背景，保证前景文字可读 */
+  .page-bg::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(180deg,
+      rgba(70, 0, 0, .55) 0%,
+      rgba(80, 0, 0, .45) 40%,
+      rgba(70, 0, 0, .60) 100%);
+  }
+
+  /* ---------- 通用容器 ---------- */
+  .wrap {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 0 18px;
+  }
+
+  /* ============================================================
+     一、顶部标题 + 宣传导语
+     ============================================================ */
+  .hero { padding: 64px 0 44px; }
+
+  .hero-tag {
+    display: block;
+    width: fit-content;
+    margin: 0 auto 18px;
+    padding: 5px 18px;
+    border: 1px solid rgba(240, 217, 138, .75);
+    border-radius: 999px;
+    color: var(--gold-soft);
+    font-size: .82rem;
+    letter-spacing: 4px;
+    text-indent: 4px;
+    background: rgba(120, 0, 0, .35);
+  }
+
+  .hero h1 {
+    text-align: center;
+    font-size: clamp(1.9rem, 5.2vw, 3rem);
+    letter-spacing: 6px;
+    text-indent: 6px;
+    color: var(--gold-soft);
+    text-shadow: 0 3px 14px rgba(0, 0, 0, .55);
+    font-weight: 700;
+  }
+
+  /* 标题下的金色分隔线 */
+  .hero .rule {
+    width: 210px;
+    height: 2px;
+    margin: 18px auto;
+    background: linear-gradient(90deg, transparent, var(--gold), transparent);
+    position: relative;
+  }
+  .hero .rule::after {
+    content: "";
+    position: absolute;
+    left: 50%; top: 50%;
+    width: 7px; height: 7px;
+    margin: -3.5px 0 0 -3.5px;
+    background: var(--gold);
+    transform: rotate(45deg);
+  }
+
+  .hero .subtitle {
+    text-align: center;
+    color: #ffeccd;
+    font-size: clamp(.95rem, 2.4vw, 1.16rem);
+    letter-spacing: 3px;
+    margin-bottom: 34px;
+  }
+
+  /* 浅米色半透明导语卡片 */
+  .intro-card {
+    background: rgba(255, 248, 240, .94);
+    border: 1px solid rgba(212, 175, 55, .55);
+    border-left: 4px solid var(--gold);
+    border-radius: 10px;
+    padding: 26px 30px;
+    box-shadow: var(--shadow);
+  }
+  .intro-card p {
+    font-size: 1rem;
+    text-align: justify;
+    color: #4a2a24;
+  }
+  .intro-card .drop {
+    float: left;
+    font-size: 3.1rem;
+    line-height: 1;
+    padding: 2px 10px 0 0;
+    color: var(--china-red);
+    font-weight: 700;
+  }
+
+  /* ============================================================
+     二、答题区
+     ============================================================ */
+  .quiz-section { padding: 10px 0 56px; }
+
+  .quiz-card {
+    background: rgba(255, 248, 240, .96);
+    border-radius: 14px;
+    padding: 34px 34px 30px;
+    box-shadow: var(--shadow);
+    border-top: 4px solid var(--china-red);
+  }
+
+  .quiz-head {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 12px;
+    padding-bottom: 14px;
+    border-bottom: 1px solid #e8d3c6;
+    margin-bottom: 8px;
+  }
+  .quiz-head h2 {
+    font-size: 1.4rem;
+    color: var(--deep-red);
+    letter-spacing: 3px;
+  }
+  .quiz-head .meta {
+    font-size: .82rem;
+    color: #9a7a6a;
+    letter-spacing: 1px;
+  }
+
+  /* 单题容器 */
+  .question { padding: 22px 0; border-bottom: 1px dashed #e3d0c4; }
+  .question:last-of-type { border-bottom: none; }
+
+  .q-title {
+    font-weight: 600;
+    font-size: 1.04rem;
+    color: #40201a;
+    margin-bottom: 14px;
+    display: flex;
+    gap: 10px;
+    align-items: flex-start;
+  }
+  .q-title .q-num {
+    flex: none;
+    width: 24px; height: 24px;
+    line-height: 24px;
+    margin-top: 3px;
+    text-align: center;
+    border-radius: 50%;
+    background: var(--china-red);
+    color: #fff;
+    font-size: .8rem;
+    font-weight: 700;
+  }
+
+  /* 选项按钮：默认浅色，悬停变红，选中填充中国红 */
+  .option {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    width: 100%;
+    text-align: left;
+    background: #fff;
+    border: 1.5px solid #e6d6cc;
+    border-radius: 9px;
+    padding: 12px 15px;
+    margin: 9px 0;
+    cursor: pointer;
+    font-size: .97rem;
+    font-family: inherit;
+    color: #4a2a24;
+    line-height: 1.6;
+    transition: border-color .22s, background .22s, transform .22s, box-shadow .22s;
+  }
+  .option .opt-label {
+    flex: none;
+    width: 22px; height: 22px;
+    line-height: 20px;
+    text-align: center;
+    border: 1.5px solid #d8c3b6;
+    border-radius: 50%;
+    font-size: .78rem;
+    font-weight: 700;
+    color: #96705f;
+    transition: all .22s;
+  }
+  .option:hover {
+    border-color: var(--china-red);
+    background: #fff4f1;
+    transform: translateX(3px);
+    box-shadow: 0 4px 12px rgba(200, 16, 46, .10);
+  }
+  .option:hover .opt-label {
+    border-color: var(--china-red);
+    color: var(--china-red);
+  }
+  .option.selected {
+    background: var(--china-red);
+    border-color: var(--deep-red);
+    color: #fff;
+    box-shadow: 0 6px 16px rgba(200, 16, 46, .32);
+  }
+  .option.selected .opt-label {
+    background: #fff;
+    border-color: #fff;
+    color: var(--china-red);
+  }
+
+  /* 提交按钮 */
+  .submit-btn {
+    display: block;
+    width: 100%;
+    max-width: 300px;
+    margin: 30px auto 4px;
+    padding: 14px 0;
+    font-size: 1.05rem;
+    font-family: inherit;
+    letter-spacing: 6px;
+    text-indent: 6px;
+    color: #fff;
+    cursor: pointer;
+    border: 1px solid var(--gold);
+    border-radius: 999px;
+    background: linear-gradient(135deg, var(--china-red), var(--deep-red));
+    box-shadow: 0 8px 22px rgba(120, 0, 0, .38);
+    transition: transform .25s, box-shadow .25s, filter .25s;
+  }
+  .submit-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 12px 30px rgba(120, 0, 0, .5);
+    filter: brightness(1.08);
+  }
+  .submit-btn:active { transform: translateY(0); }
+
+  /* ============================================================
+     三、结束页（答题后跳转，独立整屏）
+     背景：知行合一图 bg_result.jpg
+     ============================================================ */
+  .end-view {
+    position: fixed;
+    inset: 0;
+    z-index: 100;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;      /* 卡片靠右，左侧留给人物画面 */
+    padding: 40px 7vw;
+    overflow-y: auto;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity .55s ease, visibility .55s ease;
+    /* 底层为深红渐变，图片未加载时也不会出现空白 */
+    background: linear-gradient(115deg, #5c0008 0%, #8B0000 55%, #A1101C 100%);
+  }
+
+  /* 左侧人物画面：按容器比例裁切，避免整屏拉伸导致模糊 */
+  .end-photo {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    width: 46%;
+    background:
+      url("bg_result.jpg") center 38% / cover no-repeat,
+      linear-gradient(160deg, var(--deep-red), var(--china-red));
+  }
+  /* 右缘渐隐，与右侧深红面板自然衔接 */
+  .end-photo::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(90deg,
+      rgba(92, 0, 8, 0) 0%,
+      rgba(92, 0, 8, 0) 56%,
+      rgba(92, 0, 8, .55) 82%,
+      rgba(92, 0, 8, .98) 100%);
+  }
+  .end-view.show {
+    opacity: 1;
+    visibility: visible;
+  }
+
+  .end-inner {
+    position: relative;
+    z-index: 1;
+    width: min(520px, 100%);
+    background: rgba(255, 248, 240, .96);
+    border: 1px solid rgba(212, 175, 55, .7);
+    border-radius: 16px;
+    padding: 34px 34px 30px;
+    text-align: center;
+    box-shadow: 0 24px 60px rgba(0, 0, 0, .45);
+    /* 进入时轻微上浮 */
+    transform: translateY(18px);
+    transition: transform .6s cubic-bezier(.2, .8, .3, 1);
+  }
+  .end-view.show .end-inner { transform: translateY(0); }
+
+  .end-inner .eyebrow {
+    font-size: .78rem;
+    letter-spacing: 5px;
+    text-indent: 5px;
+    color: #a3826c;
+  }
+  .end-inner h2 {
+    font-size: clamp(1.5rem, 4vw, 1.85rem);
+    color: var(--deep-red);
+    letter-spacing: 4px;
+    text-indent: 4px;
+    margin: 6px 0 4px;
+  }
+  .end-inner .rule-sm {
+    width: 120px;
+    height: 1.5px;
+    margin: 14px auto 22px;
+    background: linear-gradient(90deg, transparent, var(--gold), transparent);
+  }
+
+  /* 环形分数：conic-gradient 表现得分比例 */
+  .score-ring {
+    --pct: 0;
+    width: 142px;
+    height: 142px;
+    margin: 0 auto 14px;
+    border-radius: 50%;
+    position: relative;
+    display: grid;
+    place-items: center;
+    background: conic-gradient(var(--gold) calc(var(--pct) * 1%), #eddfd2 0);
+    box-shadow: 0 10px 26px rgba(120, 0, 0, .22);
+    transition: background .9s ease, --pct 1s cubic-bezier(.2, .8, .3, 1);
+  }
+  .score-ring::before {
+    content: "";
+    position: absolute;
+    inset: 9px;
+    border-radius: 50%;
+    background: var(--cream);
+  }
+  .score-ring .score-val {
+    position: relative;
+    line-height: 1;
+  }
+  .score-ring .score-val b {
+    font-size: 3.2rem;
+    color: var(--china-red);
+    font-family: "STZhongsong", "SimSun", serif;
+  }
+  .score-ring .score-val span {
+    font-size: 1.1rem;
+    color: #ab8a76;
+  }
+
+  .score-line {
+    font-size: .95rem;
+    color: #7d5c4e;
+    margin-bottom: 6px;
+  }
+  .score-line em {
+    font-style: normal;
+    color: var(--china-red);
+    font-weight: 700;
+  }
+
+  /* 评语块 */
+  .verdict {
+    background: #fff5e8;
+    border-left: 4px solid var(--gold);
+    border-radius: 6px;
+    padding: 14px 16px;
+    margin: 18px 0 12px;
+    text-align: left;
+    font-size: 1rem;
+    color: #4a2a24;
+  }
+  /* 激励语 */
+  .encourage {
+    font-size: .93rem;
+    color: #8a6455;
+    letter-spacing: .5px;
+    margin-bottom: 24px;
+  }
+
+  /* 结束页按钮组 */
+  .end-actions {
+    display: flex;
+    gap: 12px;
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+  .btn-primary, .btn-ghost {
+    min-width: 140px;
+    padding: 12px 26px;
+    font-family: inherit;
+    font-size: .97rem;
+    letter-spacing: 3px;
+    text-indent: 3px;
+    border-radius: 999px;
+    cursor: pointer;
+    transition: all .25s;
+  }
+  .btn-primary {
+    color: #fff;
+    border: 1px solid var(--gold);
+    background: linear-gradient(135deg, var(--china-red), var(--deep-red));
+    box-shadow: 0 8px 20px rgba(120, 0, 0, .35);
+  }
+  .btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 12px 26px rgba(120, 0, 0, .5);
+    filter: brightness(1.08);
+  }
+  .btn-ghost {
+    color: var(--deep-red);
+    border: 1.5px solid #d9bfae;
+    background: transparent;
+  }
+  .btn-ghost:hover {
+    border-color: var(--china-red);
+    color: var(--china-red);
+    background: #fff2ee;
+  }
+
+  /* ============================================================
+     四、新时代青年寄语
+     ============================================================ */
+  .message-section { padding: 0 0 40px; }
+
+  .message-card {
+    background: rgba(255, 248, 240, .94);
+    border: 1px solid rgba(212, 175, 55, .55);
+    border-radius: 12px;
+    padding: 28px 30px;
+    box-shadow: var(--shadow);
+    position: relative;
+    overflow: hidden;
+  }
+  /* 右上角淡金印纹，增加国风层次 */
+  .message-card::before {
+    content: "青";
+    position: absolute;
+    right: 18px;
+    top: -6px;
+    font-family: "STZhongsong", "SimSun", serif;
+    font-size: 5.6rem;
+    line-height: 1;
+    color: rgba(200, 16, 46, .07);
+    pointer-events: none;
+  }
+  .message-card h2 {
+    font-size: 1.35rem;
+    color: var(--deep-red);
+    letter-spacing: 3px;
+    text-indent: 3px;
+    text-align: center;
+    margin-bottom: 12px;
+  }
+  .message-card .rule-sm {
+    width: 120px;
+    height: 1.5px;
+    margin: 0 auto 18px;
+    background: linear-gradient(90deg, transparent, var(--gold), transparent);
+  }
+  .message-card p {
+    font-size: 1rem;
+    text-align: justify;
+    color: #4a2a24;
+    position: relative;
+  }
+
+  /* ============================================================
+     五、页脚
+     ============================================================ */
+  .site-foot {
+    padding: 0 18px 42px;
+    text-align: center;
+    color: rgba(255, 236, 205, .75);
+    font-size: .8rem;
+    letter-spacing: .5px;
+  }
+
+  /* ============================================================
+     六、响应式适配
+     ============================================================ */
+  /* 平板与窄屏桌面：收紧卡片与人像宽度，避免相互压盖 */
+  @media (max-width: 1024px) and (min-width: 761px) {
+    .end-view { padding: 30px 5vw; }
+    .end-inner { width: min(440px, 100%); padding: 28px 26px 26px; }
+    .end-photo { width: 42%; }
+    .score-ring { width: 124px; height: 124px; }
+    .score-ring .score-val b { font-size: 2.8rem; }
+  }
+
+  @media (max-width: 760px) {
+    .hero { padding: 44px 0 30px; }
+    .hero h1 { letter-spacing: 3px; text-indent: 3px; }
+    .hero .subtitle { letter-spacing: 1.5px; margin-bottom: 26px; }
+    .intro-card, .quiz-card { padding: 22px 18px; }
+    .quiz-head { flex-direction: column; gap: 2px; }
+    .quiz-head h2 { font-size: 1.2rem; }
+
+    /* 结束页：竖图铺满屏幕，卡片沉到底部 */
+    .end-view {
+      justify-content: center;
+      align-items: flex-end;
+      padding: 0;
+    }
+    .end-photo {
+      width: 100%;
+      background-position: center top;
+    }
+    .end-photo::after {
+      background: linear-gradient(180deg,
+        rgba(60, 0, 0, .15) 0%,
+        rgba(60, 0, 0, .40) 42%,
+        rgba(55, 0, 0, .88) 72%,
+        rgba(45, 0, 0, .96) 100%);
+    }
+    .end-inner {
+      width: 100%;
+      max-height: 88vh;
+      overflow-y: auto;
+      border-radius: 18px 18px 0 0;
+      padding: 26px 20px 30px;
+      transform: translateY(30px);
+    }
+    .end-view.show .end-inner { transform: translateY(0); }
+    .score-ring { width: 118px; height: 118px; }
+    .score-ring .score-val b { font-size: 2.6rem; }
+    .end-actions { flex-direction: column; }
+    .btn-primary, .btn-ghost { width: 100%; }
+  }
+</style>
+</head>
+<body>
+
+  <!-- 全站固定背景层：红色星芒长城图（bg_home.jpg） -->
+  <div class="page-bg" aria-hidden="true"></div>
+
+  <!-- ================= 主视图 ================= -->
+  <main id="mainView">
+
+    <!-- 顶部标题与宣传导语 -->
+    <header class="hero">
+      <div class="wrap">
+        <span class="hero-tag">高校思政 · 红色课堂</span>
+        <h1>红色文化知识小课堂</h1>
+        <div class="rule"></div>
+        <p class="subtitle">以史为鉴，开创未来；青年担当，强国有我</p>
+
+        <div class="intro-card">
+          <p>
+            <span class="drop">红</span>色文化是中国共产党和中国人民在革命、建设、改革进程中创造的宝贵精神财富。通过知识答题，让我们一起学习红色历史，传承红色基因，坚定理想信念，争做新时代有为青年。
+          </p>
+        </div>
+      </div>
+    </header>
+
+    <!-- 答题区 -->
+    <section class="quiz-section">
+      <div class="wrap">
+        <div class="quiz-card">
+          <div class="quiz-head">
+            <h2>红色知识答题</h2>
+            <span class="meta" id="quizMeta">共 5 题 · 单项选择 · 每题 1 分</span>
+          </div>
+          <!-- 题目由 JS 渲染，改题只需修改 questions 数组 -->
+          <form id="quizForm" autocomplete="off"></form>
+          <button type="button" class="submit-btn" id="submitBtn">提交答案</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- 新时代青年寄语 -->
+    <section class="message-section">
+      <div class="wrap">
+        <div class="message-card">
+          <h2>新时代青年寄语</h2>
+          <div class="rule-sm"></div>
+          <p>青年兴则国家兴，青年强则国家强。新时代青年要坚定理想信念、练就过硬本领、勇于创新创造，在实现中华民族伟大复兴的征程中贡献青春力量。</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- 页脚小字 -->
+    <footer class="site-foot">
+      本网页用于高校思政学习与红色文化科普，内容仅供学习参考。
+    </footer>
+  </main>
+
+  <!-- ================= 结束页（答题后跳转） ================= -->
+  <section class="end-view" id="endView" aria-hidden="true">
+    <!-- 知行合一主题画面（bg_result.jpg） -->
+    <div class="end-photo" aria-hidden="true"></div>
+
+    <div class="end-inner" role="dialog" aria-modal="true" aria-labelledby="endTitle">
+      <p class="eyebrow">答 题 完 成</p>
+      <h2 id="endTitle">知行合一 · 逐梦前行</h2>
+      <div class="rule-sm"></div>
+
+      <!-- 环形分数 -->
+      <div class="score-ring" id="scoreRing">
+        <div class="score-val">
+          <b id="scoreNum">0</b><span id="totalLabel"> / 5</span>
+        </div>
+      </div>
+
+      <p class="score-line" id="scoreLine">本次答对 <em>0</em> 题</p>
+
+      <div class="verdict" id="verdictText"></div>
+      <p class="encourage" id="encourageText"></p>
+
+      <div class="end-actions">
+        <button type="button" class="btn-primary" id="retryBtn">重新答题</button>
+        <button type="button" class="btn-ghost" id="reviewBtn">回看题目</button>
+      </div>
+    </div>
+  </section>
+
+<script>
+  /* ============================================================
+     题目数据
+     字段说明：
+       q       题干
+       options 四个选项（字符串数组）
+       answer  正确选项下标（0=A, 1=B, 2=C, 3=D）
+     —— 增删题目只改这个数组，题量与分数显示会自动同步 ——
+     ============================================================ */
+  const questions = [
+    {
+      q: "中国共产党第一次全国代表大会于哪一年召开？",
+      options: ["1919 年", "1921 年", "1927 年", "1949 年"],
+      answer: 1
+    },
+    {
+      q: "下列哪一项是社会主义核心价值观在国家层面的价值目标？",
+      options: [
+        "爱国、敬业、诚信、友善",
+        "自由、平等、公正、法治",
+        "富强、民主、文明、和谐",
+        "改革、开放、创新、协调"
+      ],
+      answer: 2
+    },
+    {
+      q: "“红船精神”发源于下列哪一重大历史事件？",
+      options: [
+        "南昌起义",
+        "中国共产党第一次全国代表大会（嘉兴南湖）",
+        "秋收起义",
+        "遵义会议"
+      ],
+      answer: 1
+    },
+    {
+      q: "延安精神孕育并形成于下列哪一历史时期？",
+      options: [
+        "井冈山斗争时期",
+        "抗日战争和解放战争时期（延安时期）",
+        "辛亥革命时期",
+        "改革开放时期"
+      ],
+      answer: 1
+    },
+    {
+      q: "新时代中国共产党的历史使命是？",
+      options: [
+        "全面建成小康社会",
+        "实现中华民族伟大复兴",
+        "基本实现社会主义现代化",
+        "构建人类命运共同体"
+      ],
+      answer: 1
+    }
+  ];
+
+  /* 分档评语与激励语：按得分区间匹配，可自由调整文案 */
+  const feedback = [
+    {
+      max: 2,
+      verdict: "继续学习红色历史，坚定理想信念。",
+      encourage: "每一次重温，都是对初心的再一次校准。"
+    },
+    {
+      max: 4,
+      verdict: "掌握较好，继续传承红色精神。",
+      encourage: "再向前一步，把学到的道理走成脚下的路。"
+    },
+    {
+      max: 5,
+      verdict: "优秀！作为新时代青年，希望你继续以史为鉴，勇担使命。",
+      encourage: "满分不是终点，知行合一才是。"
+    }
+  ];
+
+  const LABELS = ["A", "B", "C", "D"];
+
+  const form        = document.getElementById("quizForm");
+  const endView     = document.getElementById("endView");
+  const scoreRing   = document.getElementById("scoreRing");
+  const scoreNum    = document.getElementById("scoreNum");
+  const scoreLine   = document.getElementById("scoreLine");
+  const verdictText = document.getElementById("verdictText");
+  const encourageEl = document.getElementById("encourageText");
+
+  /* ---------- 1. 渲染题目与选项 ---------- */
+  function renderQuiz() {
+    form.innerHTML = "";
+
+    questions.forEach((item, qi) => {
+      const qBox = document.createElement("div");
+      qBox.className = "question";
+
+      const title = document.createElement("div");
+      title.className = "q-title";
+      title.innerHTML =
+        '<span class="q-num">' + (qi + 1) + "</span><span>" + item.q + "</span>";
+      qBox.appendChild(title);
+
+      item.options.forEach((opt, oi) => {
+        const btn = document.createElement("button");
+        btn.type = "button";
+        btn.className = "option";
+        btn.dataset.q = qi;   // 题号
+        btn.dataset.o = oi;   // 选项号
+        btn.innerHTML =
+          '<span class="opt-label">' + LABELS[oi] + "</span><span>" + opt + "</span>";
+
+        // 同一题内单选：先清空该题所有选中态，再标记当前项
+        btn.addEventListener("click", () => {
+          form
+            .querySelectorAll('.option[data-q="' + qi + '"]')
+            .forEach(el => el.classList.remove("selected"));
+          btn.classList.add("selected");
+        });
+
+        qBox.appendChild(btn);
+      });
+
+      form.appendChild(qBox);
+    });
+  }
+
+  renderQuiz();
+
+  /* 题量文案随 questions 数组自动同步，改题后无需手改 */
+  document.getElementById("totalLabel").textContent = " / " + questions.length;
+  document.getElementById("quizMeta").textContent =
+    "共 " + questions.length + " 题 · 单项选择 · 每题 1 分";
+
+  /* ---------- 2. 提交判分并跳转结束页 ---------- */
+  document.getElementById("submitBtn").addEventListener("click", () => {
+    let score = 0;
+    let answered = 0;
+
+    questions.forEach((item, qi) => {
+      // 该题是否已作答
+      const anyPicked = form.querySelector('.option[data-q="' + qi + '"].selected');
+      if (anyPicked) answered++;
+
+      // 选中的是否正好是正确选项
+      const correctPicked = form.querySelector(
+        '.option[data-q="' + qi + '"][data-o="' + item.answer + '"].selected'
+      );
+      if (correctPicked) score++;
+    });
+
+    const unanswered = questions.length - answered;
+
+    /* 写入分数与环形进度 */
+    scoreNum.textContent = score;
+    scoreRing.style.setProperty(
+      "--pct",
+      Math.round((score / questions.length) * 100)
+    );
+
+    let line = "本次答对 <em>" + score + "</em> 题";
+    if (unanswered > 0) {
+      line += " · 有 " + unanswered + " 题未作答，按未得分计";
+    }
+    scoreLine.innerHTML = line;
+
+    /* 按得分匹配评语与激励语 */
+    const fb = feedback.find(f => score <= f.max) || feedback[feedback.length - 1];
+    verdictText.textContent = fb.verdict;
+    encourageEl.textContent = fb.encourage;
+
+    /* 跳转结束页并锁定页面滚动 */
+    endView.classList.add("show");
+    endView.setAttribute("aria-hidden", "false");
+    document.body.style.overflow = "hidden";
+    window.scrollTo({ top: 0, behavior: "auto" });
+  });
+
+  /* ---------- 3. 重新答题：清空选择，回到答题区 ---------- */
+  document.getElementById("retryBtn").addEventListener("click", () => {
+    endView.classList.remove("show");
+    endView.setAttribute("aria-hidden", "true");
+    document.body.style.overflow = "";
+    form.querySelectorAll(".option.selected")
+        .forEach(el => el.classList.remove("selected"));
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  });
+
+  /* ---------- 4. 回看题目：关闭结束页，保留已选答案 ---------- */
+  document.getElementById("reviewBtn").addEventListener("click", () => {
+    endView.classList.remove("show");
+    endView.setAttribute("aria-hidden", "true");
+    document.body.style.overflow = "";
+    form.scrollIntoView({ behavior: "smooth", block: "start" });
+  });
+</script>
+</body>
+</html>
